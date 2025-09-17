@@ -1,9 +1,7 @@
-﻿
-using Catalog.Products.Dtos;
-
+﻿ 
 namespace Catalog.Products.Features.UpdateProduct
 {
-    public record UpdateProductCommand(ProductDto ProductDto):ICommand<UpdateProductResult>;
+    public record UpdateProductCommand(ProductDto Product):ICommand<UpdateProductResult>;
 
     public record UpdateProductResult(bool IsSuccess);
 
@@ -14,13 +12,13 @@ namespace Catalog.Products.Features.UpdateProduct
         {
             var productInDb= await catalogDbContext
                     .Products
-                    .FindAsync([command.ProductDto.Id], cancellationToken:cancellationToken);
+                    .FindAsync([command.Product.Id], cancellationToken:cancellationToken);
 
             if (productInDb is null)
             {
-                throw new Exception($"Product not found:{command.ProductDto.Id} ");
+                throw new Exception($"Product not found:{command.Product.Id} ");
             }
-            UpdateProductWithNewValues(productInDb, command.ProductDto);
+            UpdateProductWithNewValues(productInDb, command.Product);
 
             catalogDbContext.Products.Update(productInDb);
             await catalogDbContext.SaveChangesAsync(cancellationToken);
