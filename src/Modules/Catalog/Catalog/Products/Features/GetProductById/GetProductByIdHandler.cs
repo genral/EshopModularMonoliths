@@ -1,5 +1,7 @@
 ﻿
 using Catalog.Products.Dtos;
+using Catalog.Products.Exceptions;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Catalog.Products.Features.GetProductById
 {
@@ -18,7 +20,7 @@ namespace Catalog.Products.Features.GetProductById
 
             if (product == null)
             {
-                throw new Exception($"Product not found:{query.Id} ");
+                throw new ProductNotFoundException(query.Id);
             }
 
             var productDto=product.Adapt<ProductDto>();
