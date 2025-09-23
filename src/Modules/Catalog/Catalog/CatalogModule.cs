@@ -1,7 +1,4 @@
-﻿using Catalog.Data;
-using Catalog.Data.Seed;
-using FluentValidation;
-using Microsoft.AspNetCore.Builder;
+﻿ using Catalog.Data.Seed; 
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,7 +13,7 @@ namespace Catalog
     {
         public static IServiceCollection AddCatalogModule(this IServiceCollection services, IConfiguration configuration)
         {
-            // add services to the conttainer
+            // add services to the container
 
             // Api endpoints services
 
