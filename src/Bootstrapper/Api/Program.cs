@@ -1,6 +1,4 @@
-
-using Serilog;
-
+ 
 var builder = WebApplication.CreateBuilder(args);
 
 // Register services Here
@@ -11,8 +9,11 @@ builder.Host.UseSerilog((context, config) =>
 });
  
 var catalogAssembly = typeof(CatalogModule).Assembly;
-builder.Services.AddCarterWithModules(catalogAssembly);
+var basketAssembly = typeof(BasketModule).Assembly;
+builder.Services.AddCarterWithModules(catalogAssembly, basketAssembly);
 
+builder.Services.AddMediatRWithAssemblies(catalogAssembly, basketAssembly);
+ 
 builder.Services
     .AddCatalogModule(builder.Configuration)
     .AddBasketModule(builder.Configuration)

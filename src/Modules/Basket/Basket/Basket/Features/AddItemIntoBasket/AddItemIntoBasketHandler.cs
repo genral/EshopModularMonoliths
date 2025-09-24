@@ -1,10 +1,9 @@
 ﻿ 
-using Basket.Basket.Dtos;
 using Basket.Basket.Exceptions; 
 using FluentValidation;
 using Shared.CQRS; 
 
-namespace Basket.Basket.Features.AddItemToBasket
+namespace Basket.Basket.Features.AddItemIntoBasket
 {
     public record AddItemIntoBasketCommand(string UserName, ShoppingCartItemDto ShoppingCartItem):ICommand<AddItemIntoBasketResult>;
     public record AddItemIntoBasketResult(Guid Id);
