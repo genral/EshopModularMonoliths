@@ -1,4 +1,5 @@
 ﻿using Basket.Basket.Exceptions;
+using Basket.Data.Repository;
 using FluentValidation;
 using Shared.CQRS;
 
@@ -16,21 +17,13 @@ namespace Basket.Basket.Features.DeleteBasket
     }
 
 
-    public class DeleteBasketHandler(BasketDbContext basketDbContext)
+    public class DeleteBasketHandler(IBasketRepository basketRepository)
         : ICommandHandler<DeleteBasketCommand, DeleteBasketResult>
     {
         public async Task<DeleteBasketResult> Handle(DeleteBasketCommand command, CancellationToken cancellationToken)
         {
-            var basket=await basketDbContext.ShoppingCarts
-                .SingleOrDefaultAsync(s=>s.UserName==command.UserName, cancellationToken);
-
-            if(basket is null)
-            {
-                throw new BasketNotFoundException(command.UserName);
-            }
-
-            basketDbContext.ShoppingCarts.Remove(basket);
-            await basketDbContext.SaveChangesAsync();
+             
+            await basketRepository.DeletBasket(command.UserName, cancellationToken); 
 
             return new DeleteBasketResult(true);
         }

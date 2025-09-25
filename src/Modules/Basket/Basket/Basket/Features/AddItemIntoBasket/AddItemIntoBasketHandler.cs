@@ -1,5 +1,6 @@
 ﻿ 
-using Basket.Basket.Exceptions; 
+using Basket.Basket.Exceptions;
+using Basket.Data.Repository;
 using FluentValidation;
 using Shared.CQRS; 
 
@@ -18,19 +19,14 @@ namespace Basket.Basket.Features.AddItemIntoBasket
         }
     }
 
-    public class AddItemIntoBasketHandler (BasketDbContext basketDbContext)
+    public class AddItemIntoBasketHandler (IBasketRepository basketRepository)
         : ICommandHandler<AddItemIntoBasketCommand, AddItemIntoBasketResult>
     {
         public async Task<AddItemIntoBasketResult> Handle(AddItemIntoBasketCommand command, CancellationToken cancellationToken)
         {
-            var basket = await basketDbContext.ShoppingCarts 
-                .Include(x => x.Items)
-                .SingleOrDefaultAsync(s => s.UserName == command.UserName, cancellationToken);
+             
 
-            if (basket is null)
-            {
-                throw new BasketNotFoundException(command.UserName);
-            }
+            var basket=await basketRepository.GetBasket(command.UserName, false, cancellationToken);
 
             basket.AddItem(command.ShoppingCartItem.ProductId,
                 command.ShoppingCartItem.Quantity,
@@ -38,7 +34,7 @@ namespace Basket.Basket.Features.AddItemIntoBasket
                 command.ShoppingCartItem.Color,
                 command.ShoppingCartItem.ProductName);
 
-            await basketDbContext.SaveChangesAsync(cancellationToken);
+            await basketRepository.SaveChangesAsync(command.UserName, cancellationToken);
 
             return new AddItemIntoBasketResult(basket.Id);
         }

@@ -1,6 +1,7 @@
 ﻿
 using Basket.Basket.Dtos;
 using Basket.Basket.Exceptions;
+using Basket.Data.Repository;
 using FluentValidation;
 using Mapster;
 using Shared.CQRS; 
@@ -18,20 +19,13 @@ namespace Basket.Basket.Features.GetBasket
         }
     }
 
-    public class GetBasketHandler (BasketDbContext basketDbContext)
+    public class GetBasketHandler (IBasketRepository basketRepository)
         : IQueryHandler<GetBasketQuery, GetBasketResult>
     {
         public async Task<GetBasketResult> Handle(GetBasketQuery query, CancellationToken cancellationToken)
         {
-            var basket = await basketDbContext.ShoppingCarts
-                .AsNoTracking()
-                .Include(x => x.Items)
-                .SingleOrDefaultAsync(s => s.UserName == query.UserName, cancellationToken);
-
-            if (basket is null)
-            {
-                throw new BasketNotFoundException(query.UserName);
-            }
+             
+            var basket=await basketRepository.GetBasket(query.UserName,true,cancellationToken);
 
             var basketDto= basket.Adapt<ShoppingCartDto>();
 

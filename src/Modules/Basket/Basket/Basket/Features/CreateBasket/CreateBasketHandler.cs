@@ -1,4 +1,5 @@
 ﻿using Basket.Basket.Dtos;
+using Basket.Data.Repository;
 using FluentValidation;
 using Shared.CQRS;
 
@@ -16,7 +17,7 @@ namespace Basket.Basket.Features.CreateBasket
         }
     }
 
-    public class CreateBasketHandler(BasketDbContext basketDbContext)
+    public class CreateBasketHandler(IBasketRepository basketRepository)
         : ICommandHandler<CreateBasketCommand, CreateBasketResult>
     {
         public async Task<CreateBasketResult> Handle(CreateBasketCommand command, CancellationToken cancellationToken)
@@ -25,8 +26,8 @@ namespace Basket.Basket.Features.CreateBasket
             var newBasket= CreateNewBasket(command.ShoppingCart);
 
             //save in database
-            basketDbContext.ShoppingCarts.Add(newBasket);
-            await basketDbContext.SaveChangesAsync(cancellationToken);
+
+            await basketRepository.CreateBasket(newBasket, cancellationToken); 
 
             //return result
             return new CreateBasketResult(newBasket.Id);

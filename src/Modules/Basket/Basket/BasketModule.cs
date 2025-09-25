@@ -1,4 +1,5 @@
 ﻿
+using Basket.Data.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
@@ -18,6 +19,9 @@ namespace Basket
             // Api endpoints services
 
             // Application usecase services
+            
+            services.AddScoped<IBasketRepository, BasketRepository>();
+            services.Decorate<IBasketRepository, CachedBasketRepository>();
 
             // Data- infrastructure services
 

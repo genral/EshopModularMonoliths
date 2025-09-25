@@ -2,6 +2,7 @@
 
 using Basket.Basket.Exceptions;
 using Basket.Data;
+using Basket.Data.Repository;
 using Shared.CQRS;
 
 namespace Basket.Basket.Features.RemoveItemFromBasket
@@ -9,23 +10,17 @@ namespace Basket.Basket.Features.RemoveItemFromBasket
     public record RemoveItemFromBasketCommand(string UserName, Guid ProductId):ICommand<RemoveItemFromBasketResult>;
     public record RemoveItemFromBasketResult(Guid Id);
 
-    public class RemoveItemFromBasket(BasketDbContext basketDbContext)
+    public class RemoveItemFromBasket(IBasketRepository basketRepository)
         : ICommandHandler<RemoveItemFromBasketCommand, RemoveItemFromBasketResult>
     {
         public async Task<RemoveItemFromBasketResult> Handle(RemoveItemFromBasketCommand command, CancellationToken cancellationToken)
         {
-            var basket = await basketDbContext.ShoppingCarts
-                .Include(x => x.Items)
-                .SingleOrDefaultAsync(s => s.UserName == command.UserName, cancellationToken);
-
-            if (basket is null)
-            {
-                throw new BasketNotFoundException(command.UserName);
-            }
+             
+            var basket=await basketRepository.GetBasket(command.UserName, false, cancellationToken);
 
             basket.RemoveItem(command.ProductId);
 
-            await basketDbContext.SaveChangesAsync();
+            await basketRepository.SaveChangesAsync(command.UserName, cancellationToken);
 
             return new RemoveItemFromBasketResult(basket.Id);
         }
