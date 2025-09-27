@@ -1,8 +1,6 @@
-﻿ 
-using Basket.Basket.Exceptions;
+﻿  
 using Basket.Data.Repository;
-using FluentValidation;
-using Shared.CQRS; 
+using Catalog.Contracts.Products.Features.GetProductById;
 
 namespace Basket.Basket.Features.AddItemIntoBasket
 {
@@ -19,7 +17,7 @@ namespace Basket.Basket.Features.AddItemIntoBasket
         }
     }
 
-    public class AddItemIntoBasketHandler (IBasketRepository basketRepository)
+    public class AddItemIntoBasketHandler (IBasketRepository basketRepository, ISender sender)
         : ICommandHandler<AddItemIntoBasketCommand, AddItemIntoBasketResult>
     {
         public async Task<AddItemIntoBasketResult> Handle(AddItemIntoBasketCommand command, CancellationToken cancellationToken)
@@ -28,11 +26,17 @@ namespace Basket.Basket.Features.AddItemIntoBasket
 
             var basket=await basketRepository.GetBasket(command.UserName, false, cancellationToken);
 
+            //Get lastest product information and set Price and ProductName
+
+            var result= await sender.Send(new GetProductByIdQuery(command.ShoppingCartItem.ProductId));
+
             basket.AddItem(command.ShoppingCartItem.ProductId,
                 command.ShoppingCartItem.Quantity,
-                command.ShoppingCartItem.Price,
+                //command.ShoppingCartItem.Price,
+                result.Product.Price,
                 command.ShoppingCartItem.Color,
-                command.ShoppingCartItem.ProductName);
+                result.Product.Name);
+                //command.ShoppingCartItem.ProductName);
 
             await basketRepository.SaveChangesAsync(command.UserName, cancellationToken);
 

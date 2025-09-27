@@ -1,8 +1,6 @@
-﻿using Basket.Basket.Dtos;
-using Basket.Data.Repository;
-using FluentValidation;
-using Shared.CQRS;
-
+﻿ 
+using Basket.Data.Repository; 
+ 
 namespace Basket.Basket.Features.CreateBasket
 {
     public record CreateBasketCommand(ShoppingCartDto ShoppingCart):ICommand<CreateBasketResult>;

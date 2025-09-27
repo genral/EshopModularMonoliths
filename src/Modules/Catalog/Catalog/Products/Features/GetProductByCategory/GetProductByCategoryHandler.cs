@@ -1,5 +1,4 @@
-﻿
-using Catalog.Products.Dtos;
+﻿ 
 
 namespace Catalog.Products.Features.GetProductByCategory
 {

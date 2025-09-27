@@ -1,11 +1,7 @@
-﻿
-using Basket.Basket.Dtos;
-using Basket.Basket.Exceptions;
+﻿ 
 using Basket.Data.Repository;
 using FluentValidation;
-using Mapster;
-using Shared.CQRS; 
-
+ 
 namespace Basket.Basket.Features.GetBasket
 {
     public record GetBasketQuery(string UserName):IQuery<GetBasketResult>;

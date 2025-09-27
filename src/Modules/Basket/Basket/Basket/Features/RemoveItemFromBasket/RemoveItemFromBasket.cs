@@ -3,8 +3,7 @@
 using Basket.Basket.Exceptions;
 using Basket.Data;
 using Basket.Data.Repository;
-using Shared.CQRS;
-
+ 
 namespace Basket.Basket.Features.RemoveItemFromBasket
 {
     public record RemoveItemFromBasketCommand(string UserName, Guid ProductId):ICommand<RemoveItemFromBasketResult>;
