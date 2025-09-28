@@ -1,7 +1,8 @@
 ﻿using Basket.Data.JsonConverters;
-using Microsoft.Extensions.Caching.Distributed; 
+using Microsoft.Extensions.Caching.Distributed;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Threading;
 
 namespace Basket.Data.Repository
 {
@@ -50,6 +51,11 @@ namespace Basket.Data.Repository
             return basket;
         }
 
+        public async Task<IList<ShoppingCartItem>> GetBasketItems(Guid productId, bool asNoTracking = true, CancellationToken cancellationToken = default)
+        { 
+            return await basketRepository.GetBasketItems(productId, false, cancellationToken);
+        }
+
         public async Task<int> SaveChangesAsync(string? userName = null, CancellationToken cancellationToken = default)
         {
             var result= await basketRepository.SaveChangesAsync(userName, cancellationToken);
@@ -59,6 +65,6 @@ namespace Basket.Data.Repository
 
             return result;
              
-        }
+        } 
     }
 }

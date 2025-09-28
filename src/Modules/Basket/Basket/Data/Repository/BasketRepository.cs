@@ -38,6 +38,20 @@ namespace Basket.Data.Repository
             return basket ?? throw new BasketNotFoundException(userName);
         }
 
+        public async Task<IList<ShoppingCartItem>> GetBasketItems(Guid productId, bool asNoTracking = true, CancellationToken cancellationToken = default)
+        {
+            var query =  basketDbContext.ShoppingCartItems
+                .Where(i => i.ProductId == productId);
+
+            if(asNoTracking)
+            {
+                query.AsNoTracking();   
+            }
+
+            return await query.ToListAsync();  
+
+        }
+
         public async Task<int> SaveChangesAsync(string? userName = null, CancellationToken cancellationToken = default)
         {
             return await basketDbContext.SaveChangesAsync(cancellationToken);

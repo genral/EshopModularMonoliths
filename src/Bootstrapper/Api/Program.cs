@@ -1,4 +1,6 @@
- 
+
+
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Register services Here
@@ -17,6 +19,8 @@ builder.Services.AddMediatRWithAssemblies(catalogAssembly, basketAssembly);
 builder.Services.AddStackExchangeRedisCache(opt => {
     opt.Configuration = builder.Configuration.GetConnectionString("redis");
 });
+
+builder.Services.AddMassTansitWithAssemblies(builder.Configuration, catalogAssembly, basketAssembly);
  
 //module services
 builder.Services
