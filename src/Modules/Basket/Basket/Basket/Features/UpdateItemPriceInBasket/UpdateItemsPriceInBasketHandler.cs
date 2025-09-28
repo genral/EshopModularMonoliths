@@ -32,7 +32,7 @@ namespace Basket.Basket.Features.UpdateItemPriceInBasket
 
             foreach (var item in itemsToUpdate)
             {
-                item.UpdatePrice(command.Price); 
+                await basketRepository.UpdateItemPriceInBasket(item.ProductId, command.Price, cancellationToken); 
             }
 
             await basketRepository.SaveChangesAsync(null, cancellationToken); 

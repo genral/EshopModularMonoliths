@@ -51,6 +51,11 @@ namespace Basket.Data.Repository
             return basket;
         }
 
+        public async Task<ShoppingCart> GetBasket(Guid id, bool asNoTracking = true, CancellationToken cancellationToken = default)
+        {
+            return await basketRepository.GetBasket(id, asNoTracking, cancellationToken);
+        }
+
         public async Task<IList<ShoppingCartItem>> GetBasketItems(Guid productId, bool asNoTracking = true, CancellationToken cancellationToken = default)
         { 
             return await basketRepository.GetBasketItems(productId, false, cancellationToken);
@@ -65,6 +70,32 @@ namespace Basket.Data.Repository
 
             return result;
              
-        } 
+        }
+
+        public async Task<bool> UpdateItemPriceInBasket(Guid productId, decimal price, CancellationToken cancellationToken = default)
+        {
+            var result = await basketRepository.UpdateItemPriceInBasket(productId, price, cancellationToken);
+            if (!result)
+                return false;
+
+            var items = await basketRepository.GetBasketItems(productId, true, cancellationToken);
+
+            var tasks = items.Select(async item =>
+            {
+                var basket = await GetBasket(item.ShoppingCartId, true, cancellationToken);
+
+                // Check if cache exists first
+                var existingCache = await cache.GetStringAsync(basket.UserName, cancellationToken);
+                if (!string.IsNullOrEmpty(existingCache))
+                {
+                    var updatedJson = JsonSerializer.Serialize(basket, _options);
+                    await cache.SetStringAsync(basket.UserName, updatedJson, cancellationToken);
+                }
+            });
+
+            await Task.WhenAll(tasks);
+
+            return true;
+        }
     }
 }

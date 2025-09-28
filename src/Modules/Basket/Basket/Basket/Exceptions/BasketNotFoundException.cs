@@ -6,5 +6,8 @@ namespace Basket.Basket.Exceptions
         public BasketNotFoundException(string userName) : base("ShoppingCart", userName)
         {
         }
+        public BasketNotFoundException(Guid id) : base("ShoppingCart", id)
+        {
+        }
     }
 }

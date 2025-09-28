@@ -38,6 +38,19 @@ namespace Basket.Data.Repository
             return basket ?? throw new BasketNotFoundException(userName);
         }
 
+        public async Task<ShoppingCart> GetBasket(Guid id, bool asNoTracking = true, CancellationToken cancellationToken = default)
+        {
+            var query = basketDbContext.ShoppingCarts
+                            .Include(s => s.Items)
+                            .Where(s=>s.Id==id);
+
+            if (asNoTracking) query.AsNoTracking();
+
+            var basket = await query.SingleOrDefaultAsync(cancellationToken);
+
+            return basket ?? throw new BasketNotFoundException(id);
+        }
+
         public async Task<IList<ShoppingCartItem>> GetBasketItems(Guid productId, bool asNoTracking = true, CancellationToken cancellationToken = default)
         {
             var query =  basketDbContext.ShoppingCartItems
@@ -55,6 +68,18 @@ namespace Basket.Data.Repository
         public async Task<int> SaveChangesAsync(string? userName = null, CancellationToken cancellationToken = default)
         {
             return await basketDbContext.SaveChangesAsync(cancellationToken);
+        }
+
+        public async Task<bool> UpdateItemPriceInBasket(Guid productId, decimal price, CancellationToken cancellationToken = default)
+        {
+            var items= await GetBasketItems(productId); 
+            if(items==null) return false;
+
+            foreach (var item in items) {
+                item.UpdatePrice(price);
+            }
+            await basketDbContext.SaveChangesAsync(cancellationToken);
+            return true;
         }
     }
 }
